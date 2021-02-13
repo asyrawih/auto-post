@@ -1,16 +1,43 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/gocolly/colly"
-	"github.com/hananloser/auto-post/libs"
+	"github.com/hananloser/auto-post/Comics"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
-	"time"
 )
 
-func setupHandler(){
+func main() {
+	c := colly.NewCollector(colly.AllowedDomains("komikcast.com"), colly.Async(true))
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Simple Shell")
+	fmt.Println("---------------------")
+	fmt.Println("1 . Get Hot Updates")
+	fmt.Println("2 . Latest Updates")
+	fmt.Println("0 . Exit")
+
+	for {
+		fmt.Print("-> ")
+		text, _ := reader.ReadString('\n')
+		// convert CRLF to LF
+		text = strings.Replace(text, "\n", "", -1)
+
+		if strings.Compare("1", text) == 0 {
+			lists := Comics.GetComics(c)
+			for _, list := range lists {
+				fmt.Println(list.Name , list.Link)
+			}
+		}
+
+		teriminate()
+	}
+}
+
+func teriminate() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
@@ -18,17 +45,4 @@ func setupHandler(){
 		fmt.Println("\r- Ctrl+C pressed in Terminal")
 		os.Exit(0)
 	}()
-}
-
-func main() {
-	setupHandler();
-	c := colly.NewCollector(colly.AllowedDomains("komikcast.com"), colly.Async(true))
-	lists := libs.GetComics(c)
-	for _ , list := range lists{
-		fmt.Println(list.Name)
-	}
-	for {
-		fmt.Println("- Sleeping")
-		time.Sleep(10 * time.Second)
-	}
 }
