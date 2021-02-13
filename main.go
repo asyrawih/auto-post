@@ -12,7 +12,10 @@ import (
 )
 
 func main() {
+
 	c := colly.NewCollector(colly.AllowedDomains("komikcast.com"), colly.Async(true))
+
+	// Read Input From Console
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Simple Shell")
 	fmt.Println("---------------------")
@@ -30,6 +33,14 @@ func main() {
 			lists := Comics.GetComics(c)
 			for _, list := range lists {
 				fmt.Println(list.Name , list.Link)
+			}
+		}
+
+		// Get Latest Comics
+		if strings.Compare("2" , text) == 0 {
+			latests := Comics.LastUpdate(c)
+			for index, latest := range latests {
+				fmt.Println(index + 1 , "." , latest.Name , latest.Link)
 			}
 		}
 
