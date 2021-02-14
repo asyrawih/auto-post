@@ -7,6 +7,7 @@ import (
 	"github.com/hananloser/auto-post/Comics"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 )
@@ -38,10 +39,28 @@ func main() {
 
 		// Get Latest Comics
 		if strings.Compare("2" , text) == 0 {
+
 			latests := Comics.LastUpdate(c)
+
 			for index, latest := range latests {
 				fmt.Println(index + 1 , "." , latest.Name , latest.Link)
 			}
+
+			fmt.Print("Choice => ")
+
+			chapter , _ := reader.ReadString('\n');
+
+			chapter = strings.Replace(chapter, "\n", "", -1)
+
+			choice, _ := strconv.ParseInt(chapter, 5, 32)
+
+			listChapters := Comics.GetChapter(c , latests[choice - 1].Link)
+
+			for _ , list := range listChapters {
+				fmt.Println(list)
+			}
+
+			break
 		}
 
 		teriminate()
